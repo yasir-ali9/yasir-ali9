@@ -1,0 +1,48 @@
+name: Update profile card
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "profile.json"
+      - "black.svg"
+      - "white.svg"
+      - "scripts/**"
+      - ".github/workflows/profile.yml"
+  schedule:
+    - cron: "17 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profile-card
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate profile SVGs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/generate.py
+
+      - name: Commit updated cards
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/dark.svg assets/light.svg
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: update profile stats"
+          git push

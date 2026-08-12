@@ -1,0 +1,222 @@
+#!/usr/bin/env python3
+"""Build the light and dark profile cards from portrait SVGs and GitHub data."""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import urllib.error
+import urllib.request
+from datetime import datetime, timezone
+from html import escape
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+OUTPUT_DIR = ROOT / "assets"
+API = "https://api.github.com"
+GRAPHQL = "https://api.github.com/graphql"
+
+
+def request_json(url: str, token: str = "", payload: dict | None = None) -> dict | list:
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "yasir-ali-profile-readme",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    data = json.dumps(payload).encode() if payload is not None else None
+    request = urllib.request.Request(url, data=data, headers=headers, method="POST" if data else "GET")
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.load(response)
+
+
+def github_stats(username: str) -> dict[str, str | int]:
+    token = os.getenv("GITHUB_TOKEN", "")
+    user = request_json(f"{API}/users/{username}", token)
+    repos = request_json(f"{API}/users/{username}/repos?type=owner&per_page=100", token)
+
+    stats: dict[str, str | int] = {
+        "repos": user.get("public_repos", 0),
+        "stars": sum(repo.get("stargazers_count", 0) for repo in repos),
+        "followers": user.get("followers", 0),
+        "following": user.get("following", 0),
+        "account_age": account_age(user["created_at"]),
+        "contributions": "—",
+    }
+
+    if token:
+        year = datetime.now(timezone.utc).year
+        query = """
+        query($login: String!, $from: DateTime!, $to: DateTime!) {
+          user(login: $login) {
+            contributionsCollection(from: $from, to: $to) {
+              contributionCalendar { totalContributions }
+            }
+          }
+        }
+        """
+        payload = {
+            "query": query,
+            "variables": {
+                "login": username,
+                "from": f"{year}-01-01T00:00:00Z",
+                "to": f"{year}-12-31T23:59:59Z",
+            },
+        }
+        result = request_json(GRAPHQL, token, payload)
+        try:
+            stats["contributions"] = result["data"]["user"]["contributionsCollection"]["contributionCalendar"]["totalContributions"]
+        except (KeyError, TypeError):
+            pass
+    return stats
+
+
+def account_age(created_at: str) -> str:
+    created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+    now = datetime.now(timezone.utc)
+    years = now.year - created.year
+    months = now.month - created.month
+    if now.day < created.day:
+        months -= 1
+    if months < 0:
+        years -= 1
+        months += 12
+    return f"{years}y {months}m"
+
+
+def portrait_contents(path: Path) -> str:
+    raw = path.read_text(encoding="utf-8")
+    match = re.search(r"<svg\b[^>]*>(.*)</svg>\s*$", raw, re.DOTALL)
+    if not match:
+        raise ValueError(f"Could not read SVG contents from {path}")
+    return match.group(1)
+
+
+def value(value: object) -> str:
+    if isinstance(value, int):
+        return f"{value:,}"
+    return str(value)
+
+
+def row(y: int, label: str, data: object, *, x: int = 505) -> str:
+    label_text = escape(label)
+    data_text = escape(value(data))
+    return (
+        f'<text x="{x}" y="{y}" class="line">'
+        f'<tspan class="prompt">›</tspan> '
+        f'<tspan class="key">{label_text}</tspan>'
+        f'<tspan class="muted">  {"·" * max(3, 27 - len(label) - len(data_text))}  </tspan>'
+        f'<tspan class="value">{data_text}</tspan></text>'
+    )
+
+
+def section(y: int, title: str) -> str:
+    rule = "─" * max(8, 43 - len(title))
+    return (
+        f'<text x="505" y="{y}" class="section">'
+        f'<tspan class="prompt">╭─</tspan> {escape(title)} '
+        f'<tspan class="muted">{rule}</tspan></text>'
+    )
+
+
+def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
+    dark = theme == "dark"
+    colors = {
+        "background": "#0d1117" if dark else "#f6f8fa",
+        "panel": "#161b22" if dark else "#ffffff",
+        "border": "#30363d" if dark else "#d0d7de",
+        "text": "#e6edf3" if dark else "#1f2328",
+        "muted": "#6e7681" if dark else "#8c959f",
+        "accent": "#ffa657" if dark else "#bc4c00",
+        "value": "#79c0ff" if dark else "#0969da",
+        "green": "#3fb950" if dark else "#1a7f37",
+    }
+
+    info_rows = [
+        row(114, "Role", profile["role"]),
+        row(142, "Location", profile["location"]),
+        row(170, "OS", profile["os"]),
+        row(198, "Terminal", profile["terminal"]),
+        row(226, "Editor", profile["editor"]),
+    ]
+    stack_rows = [
+        row(294, "Focus", profile["focus"]),
+        row(322, "Languages", profile["languages"]),
+        row(350, "Tools", profile["tools"]),
+        row(378, "Interests", profile["interests"]),
+    ]
+    stat_rows = [
+        row(446, "Repositories", stats["repos"]),
+        row(474, "Stars earned", stats["stars"]),
+        row(502, "Followers", stats["followers"]),
+        row(530, "Following", stats["following"]),
+        row(558, "Contributions this year", stats["contributions"]),
+        row(586, "GitHub uptime", stats["account_age"]),
+    ]
+    updated = datetime.now(timezone.utc).strftime("%d %b %Y · %H:%M UTC")
+
+    return f'''<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+  <title id="title">{escape(profile["display_name"])}'s GitHub profile</title>
+  <desc id="description">A terminal-style profile card with an ASCII portrait and GitHub statistics.</desc>
+  <style>
+    .line, .section, .header, .footer {{ font-family: Consolas, "Liberation Mono", Menlo, monospace; }}
+    .header {{ font-size: 21px; font-weight: 700; fill: {colors["text"]}; }}
+    .section {{ font-size: 17px; font-weight: 600; fill: {colors["text"]}; }}
+    .line {{ font-size: 16px; fill: {colors["text"]}; }}
+    .footer {{ font-size: 12px; fill: {colors["muted"]}; }}
+    .key {{ fill: {colors["accent"]}; }}
+    .value {{ fill: {colors["value"]}; }}
+    .muted {{ fill: {colors["muted"]}; }}
+    .prompt {{ fill: {colors["green"]}; }}
+  </style>
+  <rect width="1200" height="640" rx="18" fill="{colors["background"]}"/>
+  <rect x="8" y="8" width="1184" height="624" rx="14" fill="{colors["panel"]}" stroke="{colors["border"]}"/>
+  <circle cx="33" cy="32" r="6" fill="#ff5f56"/>
+  <circle cx="53" cy="32" r="6" fill="#ffbd2e"/>
+  <circle cx="73" cy="32" r="6" fill="#27c93f"/>
+  <text x="505" y="60" class="header"><tspan class="prompt">{escape(profile["username"])}</tspan>@github <tspan class="muted">~ $ whoami</tspan></text>
+  <line x1="480" y1="72" x2="480" y2="600" stroke="{colors["border"]}"/>
+  <g transform="translate(25 75) scale(0.96)">{portrait}</g>
+  {section(86, "SYSTEM")}
+  {''.join(info_rows)}
+  {section(266, "STACK")}
+  {''.join(stack_rows)}
+  {section(418, "GITHUB")}
+  {''.join(stat_rows)}
+  <text x="505" y="614" class="footer">last sync: {escape(updated)}</text>
+</svg>
+'''
+
+
+def main() -> None:
+    profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
+    try:
+        stats = github_stats(profile["username"])
+    except (urllib.error.URLError, TimeoutError, KeyError) as error:
+        print(f"warning: GitHub data unavailable ({error}); using fallback values")
+        stats = {
+            "repos": "—",
+            "stars": "—",
+            "followers": "—",
+            "following": "—",
+            "contributions": "—",
+            "account_age": "—",
+        }
+
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    themes = {
+        "dark": ROOT / "white.svg",
+        "light": ROOT / "black.svg",
+    }
+    for theme, portrait_path in themes.items():
+        output = OUTPUT_DIR / f"{theme}.svg"
+        output.write_text(render(theme, profile, stats, portrait_contents(portrait_path)), encoding="utf-8")
+        print(f"wrote {output.relative_to(ROOT)}")
+
+
+if __name__ == "__main__":
+    main()
