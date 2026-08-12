@@ -1,4 +1,4 @@
-<a href="https://github.com/yasir-ali">
+<a href="https://github.com/yasir-ali9">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./assets/dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="./assets/light.svg">

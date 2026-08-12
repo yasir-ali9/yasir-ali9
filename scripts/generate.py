@@ -22,7 +22,7 @@ GRAPHQL = "https://api.github.com/graphql"
 def request_json(url: str, token: str = "", payload: dict | None = None) -> dict | list:
     headers = {
         "Accept": "application/vnd.github+json",
-        "User-Agent": "yasir-ali-profile-readme",
+        "User-Agent": "yasir-ali9-profile-readme",
         "X-GitHub-Api-Version": "2022-11-28",
     }
     if token:
@@ -101,7 +101,7 @@ def value(value: object) -> str:
     return str(value)
 
 
-def row(y: int, label: str, data: object, *, x: int = 505) -> str:
+def row(y: int, label: str, data: object, *, x: int = 520) -> str:
     label_text = escape(label)
     data_text = escape(value(data))
     return (
@@ -116,7 +116,7 @@ def row(y: int, label: str, data: object, *, x: int = 505) -> str:
 def section(y: int, title: str) -> str:
     rule = "─" * max(8, 43 - len(title))
     return (
-        f'<text x="505" y="{y}" class="section">'
+        f'<text x="520" y="{y}" class="section">'
         f'<tspan class="prompt">╭─</tspan> {escape(title)} '
         f'<tspan class="muted">{rule}</tspan></text>'
     )
@@ -125,14 +125,15 @@ def section(y: int, title: str) -> str:
 def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
     dark = theme == "dark"
     colors = {
-        "background": "#0d1117" if dark else "#f6f8fa",
-        "panel": "#161b22" if dark else "#ffffff",
-        "border": "#30363d" if dark else "#d0d7de",
+        "background": "#07111f" if dark else "#f6f8fa",
+        "panel": "#0d1828" if dark else "#ffffff",
+        "border": "#213047" if dark else "#d0d7de",
         "text": "#e6edf3" if dark else "#1f2328",
         "muted": "#6e7681" if dark else "#8c959f",
         "accent": "#ffa657" if dark else "#bc4c00",
         "value": "#79c0ff" if dark else "#0969da",
         "green": "#3fb950" if dark else "#1a7f37",
+        "dot": "#58a6ff" if dark else "#218bff",
     }
 
     info_rows = [
@@ -175,19 +176,19 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
   </style>
   <rect width="1200" height="640" rx="18" fill="{colors["background"]}"/>
   <rect x="8" y="8" width="1184" height="624" rx="14" fill="{colors["panel"]}" stroke="{colors["border"]}"/>
-  <circle cx="33" cy="32" r="6" fill="#ff5f56"/>
-  <circle cx="53" cy="32" r="6" fill="#ffbd2e"/>
-  <circle cx="73" cy="32" r="6" fill="#27c93f"/>
-  <text x="505" y="60" class="header"><tspan class="prompt">{escape(profile["username"])}</tspan>@github <tspan class="muted">~ $ whoami</tspan></text>
-  <line x1="480" y1="72" x2="480" y2="600" stroke="{colors["border"]}"/>
-  <g transform="translate(25 75) scale(0.96)">{portrait}</g>
+  <circle cx="33" cy="32" r="6" fill="{colors["dot"]}"/>
+  <circle cx="53" cy="32" r="6" fill="{colors["dot"]}"/>
+  <circle cx="73" cy="32" r="6" fill="{colors["dot"]}"/>
+  <text x="520" y="60" class="header"><tspan class="prompt">{escape(profile["username"])}</tspan>@github <tspan class="muted">~ $ whoami</tspan></text>
+  <line x1="495" y1="72" x2="495" y2="600" stroke="{colors["border"]}"/>
+  <g transform="translate(12 66) scale(1.08)">{portrait}</g>
   {section(86, "SYSTEM")}
   {''.join(info_rows)}
   {section(266, "STACK")}
   {''.join(stack_rows)}
   {section(418, "GITHUB")}
   {''.join(stat_rows)}
-  <text x="505" y="614" class="footer">last sync: {escape(updated)}</text>
+  <text x="520" y="614" class="footer">last sync: {escape(updated)}</text>
 </svg>
 '''
 
