@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "assets"
-ASSET_VERSION = "v7"
+ASSET_VERSION = "v8"
 API = "https://api.github.com"
 
 
@@ -178,15 +178,15 @@ def render(theme: str, profile: dict, growth: dict[str, object], portrait: str) 
         "background": "#151b24" if dark else "#f3f4f6",
         "panel": "#151b24" if dark else "#f3f4f6",
         "border": "#374358" if dark else "#d1d5db",
-        "text": "#e6edf3" if dark else "#1f2328",
-        "muted": "#6e7681" if dark else "#8c959f",
-        "accent": "#ffa657" if dark else "#bc4c00",
-        "value": "#79c0ff" if dark else "#0969da",
-        "green": "#3fb950" if dark else "#1a7f37",
-        "dot": "#374358" if dark else "#aeb4bd",
+        "text": "#c9d1d9" if dark else "#3f4752",
+        "muted": "#c9d1d9" if dark else "#3f4752",
+        "accent": "#c9d1d9" if dark else "#3f4752",
+        "value": "#c9d1d9" if dark else "#3f4752",
+        "green": "#c9d1d9" if dark else "#3f4752",
+        "dot": "#c9d1d9" if dark else "#3f4752",
     }
+    portrait = re.sub(r'fill="(?:#f5f5f5|#000000)"', f'fill="{colors["text"]}"', portrait)
 
-    net_class = "growth" if growth["net"] >= 0 else "accent"
     start_label = growth["start"].strftime("%b '%y")
     end_label = growth["end"].strftime("%b '%y")
     updated = datetime.now(timezone.utc).strftime("%d %b %Y")
@@ -201,7 +201,7 @@ def render(theme: str, profile: dict, growth: dict[str, object], portrait: str) 
     .line {{ font-size: 16px; fill: {colors["text"]}; }}
     .footer {{ font-size: 12px; fill: {colors["muted"]}; }}
     .chart {{ font-size: 14px; white-space: pre; }}
-    .chart-area {{ fill: {colors["value"]}; }}
+    .chart-area {{ fill: {colors["text"]}; }}
     .key {{ fill: {colors["accent"]}; }}
     .value {{ fill: {colors["value"]}; }}
     .muted {{ fill: {colors["muted"]}; }}
@@ -213,15 +213,13 @@ def render(theme: str, profile: dict, growth: dict[str, object], portrait: str) 
   <circle cx="25" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="45" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="65" cy="24" r="6" fill="{colors["dot"]}"/>
-  <text x="510" y="51" class="header">{escape(profile["display_name"])}</text>
-  <line x1="490" y1="62" x2="490" y2="573" stroke="{colors["border"]}"/>
   <g transform="translate(4 18) scale(1.08)">{portrait}</g>
-  <text x="510" y="91" class="section"><tspan class="prompt">╭─</tspan> CODE GROWTH <tspan class="muted">· LAST 52 WEEKS ─────────────</tspan></text>
-  <text x="510" y="119" class="line"><tspan class="key">NET CHANGE</tspan><tspan class="muted">  ···················  </tspan><tspan class="{net_class}">{escape(signed_number(growth["net"]))} lines</tspan></text>
+  <text x="510" y="70" class="section">CODE GROWTH <tspan class="muted">· LAST 52 WEEKS</tspan></text>
+  <text x="510" y="105" class="line">NET <tspan class="muted">······························</tspan><tspan> {escape(signed_number(growth["net"]))}</tspan></text>
   {chart_markup(growth)}
   <text x="585" y="477" class="footer">{escape(start_label)}<tspan dx="350">{escape(end_label)}</tspan></text>
-  <text x="510" y="515" class="line"><tspan class="growth">+{growth["additions"]:,}</tspan><tspan class="muted"> added</tspan><tspan dx="28" class="accent">−{growth["deletions"]:,}</tspan><tspan class="muted"> removed</tspan></text>
-  <text x="510" y="548" class="footer">{growth["repositories"]} owned public repositories · refreshed {escape(updated)}</text>
+  <text x="1170" y="515" text-anchor="end" class="line">+{growth["additions"]:,}<tspan dx="28">−{growth["deletions"]:,}</tspan></text>
+  <text x="1170" y="548" text-anchor="end" class="footer">{growth["repositories"]} repositories · {escape(updated)}</text>
 </svg>
 '''
 
