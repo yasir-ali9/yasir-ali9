@@ -149,16 +149,6 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
         row(350, "Tools", profile["tools"]),
         row(378, "Interests", profile["interests"]),
     ]
-    stat_rows = [
-        row(446, "Repositories", stats["repos"]),
-        row(474, "Stars earned", stats["stars"]),
-        row(502, "Followers", stats["followers"]),
-        row(530, "Following", stats["following"]),
-        row(558, "Contributions this year", stats["contributions"]),
-        row(586, "GitHub uptime", stats["account_age"]),
-    ]
-    updated = datetime.now(timezone.utc).strftime("%d %b %Y · %H:%M UTC")
-
     return f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
   <title id="title">{escape(profile["display_name"])}'s GitHub profile</title>
@@ -185,9 +175,6 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
   {''.join(info_rows)}
   {section(266, "STACK")}
   {''.join(stack_rows)}
-  {section(418, "GITHUB")}
-  {''.join(stat_rows)}
-  <text x="510" y="620" class="footer">last sync: {escape(updated)}</text>
 </svg>
 '''
 
