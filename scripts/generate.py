@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "assets"
-ASSET_VERSION = "v8"
+ASSET_VERSION = "v9"
 API = "https://api.github.com"
 
 
@@ -131,24 +131,52 @@ def signed_number(number: int) -> str:
     return f"{sign}{abs(number):,}"
 
 
-def ascii_chart(series: list[int], width: int = 52, height: int = 15) -> list[tuple[str, str]]:
-    """Create an ASCII area chart as (axis label, plot) rows."""
+def active_window(growth: dict[str, object]) -> tuple[list[int], datetime]:
+    """Trim empty leading weeks while retaining one week of visual context."""
+    series = growth["series"]
+    changes = [series[0]] + [series[index] - series[index - 1] for index in range(1, len(series))]
+    first_active = next((index for index, change in enumerate(changes) if change), len(series) - 1)
+    start_index = max(0, first_active - 1)
+    return series[start_index:], growth["start"] + timedelta(weeks=start_index)
+
+
+def ascii_chart(series: list[int], width: int = 62, height: int = 18) -> list[tuple[str, str]]:
+    """Create a connected ASCII line chart as (axis label, plot) rows."""
     if not series:
         series = [0] * width
-    if len(series) != width:
-        series = [series[round(index * (len(series) - 1) / (width - 1))] for index in range(width)]
+    if len(series) == 1:
+        samples = series * width
+    else:
+        samples = []
+        for column in range(width):
+            position = column * (len(series) - 1) / (width - 1)
+            left = int(position)
+            right = min(left + 1, len(series) - 1)
+            fraction = position - left
+            samples.append(round(series[left] * (1 - fraction) + series[right] * fraction))
 
-    minimum = min(0, min(series))
-    maximum = max(0, max(series))
+    minimum = min(0, min(samples))
+    maximum = max(0, max(samples))
     if minimum == maximum:
         maximum = minimum + 1
 
     grid = [[" " for _ in range(width)] for _ in range(height)]
-    for column, point in enumerate(series):
-        row = round((maximum - point) * (height - 1) / (maximum - minimum))
-        grid[row][column] = "●" if column == width - 1 else "•"
-        for fill_row in range(row + 1, height):
-            grid[fill_row][column] = "░"
+    point_rows = [round((maximum - point) * (height - 1) / (maximum - minimum)) for point in samples]
+    grid[point_rows[0]][0] = "●"
+    for column in range(1, width):
+        previous = point_rows[column - 1]
+        current = point_rows[column]
+        if current == previous:
+            grid[current][column] = "─"
+        elif current < previous:
+            grid[current][column] = "╱"
+            for row in range(current + 1, previous + 1):
+                grid[row][column] = "│"
+        else:
+            grid[current][column] = "╲"
+            for row in range(previous, current):
+                grid[row][column] = "│"
+    grid[point_rows[-1]][-1] = "●"
 
     middle = height // 2
     rows: list[tuple[str, str]] = []
@@ -162,8 +190,9 @@ def ascii_chart(series: list[int], width: int = 52, height: int = 15) -> list[tu
 
 def chart_markup(growth: dict[str, object]) -> str:
     lines = []
-    for index, (axis, plot) in enumerate(ascii_chart(growth["series"])):
-        y = 145 + index * 21
+    series, _ = active_window(growth)
+    for index, (axis, plot) in enumerate(ascii_chart(series)):
+        y = 158 + index * 21
         lines.append(
             f'<text x="510" y="{y}" class="chart">'
             f'<tspan class="muted">{escape(axis)}</tspan>'
@@ -187,13 +216,15 @@ def render(theme: str, profile: dict, growth: dict[str, object], portrait: str) 
     }
     portrait = re.sub(r'fill="(?:#f5f5f5|#000000)"', f'fill="{colors["text"]}"', portrait)
 
-    start_label = growth["start"].strftime("%b '%y")
+    active_series, active_start = active_window(growth)
+    start_label = active_start.strftime("%b '%y")
     end_label = growth["end"].strftime("%b '%y")
-    updated = datetime.now(timezone.utc).strftime("%d %b %Y")
+    updated = datetime.now(timezone.utc).strftime("%d %b %Y").upper()
+    window_weeks = len(active_series)
     return f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="585" viewBox="0 0 1200 585" role="img" aria-labelledby="title description">
   <title id="title">{escape(profile["display_name"])}'s GitHub profile</title>
-  <desc id="description">An ASCII portrait and a real 52-week graph of net line changes across owned public GitHub repositories.</desc>
+  <desc id="description">An ASCII portrait and a real active-window graph of net line changes across owned public GitHub repositories.</desc>
   <style>
     .line, .section, .header, .footer, .chart {{ font-family: Consolas, "Liberation Mono", Menlo, monospace; }}
     .header {{ font-size: 21px; font-weight: 700; fill: {colors["text"]}; }}
@@ -214,12 +245,13 @@ def render(theme: str, profile: dict, growth: dict[str, object], portrait: str) 
   <circle cx="45" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="65" cy="24" r="6" fill="{colors["dot"]}"/>
   <g transform="translate(4 18) scale(1.08)">{portrait}</g>
-  <text x="510" y="70" class="section">CODE GROWTH <tspan class="muted">· LAST 52 WEEKS</tspan></text>
-  <text x="510" y="105" class="line">NET <tspan class="muted">······························</tspan><tspan> {escape(signed_number(growth["net"]))}</tspan></text>
+  <text x="510" y="64" class="section">CODE GROWTH <tspan class="muted">· ACTIVE {window_weeks} WEEKS</tspan></text>
+  <text x="510" y="98" class="line">NET {escape(signed_number(growth["net"]))}</text>
+  <text x="1170" y="98" text-anchor="end" class="line">+{growth["additions"]:,}<tspan dx="28">−{growth["deletions"]:,}</tspan></text>
+  <text x="1170" y="128" text-anchor="end" class="footer">{growth["repositories"]} REPOSITORIES  •  {escape(updated)} SYNCED</text>
   {chart_markup(growth)}
-  <text x="585" y="477" class="footer">{escape(start_label)}<tspan dx="350">{escape(end_label)}</tspan></text>
-  <text x="1170" y="515" text-anchor="end" class="line">+{growth["additions"]:,}<tspan dx="28">−{growth["deletions"]:,}</tspan></text>
-  <text x="1170" y="548" text-anchor="end" class="footer">{growth["repositories"]} repositories · {escape(updated)}</text>
+  <text x="585" y="548" class="footer">{escape(start_label)}</text>
+  <text x="1115" y="548" text-anchor="end" class="footer">{escape(end_label)}</text>
 </svg>
 '''
 
