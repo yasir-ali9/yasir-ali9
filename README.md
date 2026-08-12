@@ -1,10 +1,10 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/dark-v6.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/light-v6.svg">
-  <img alt="Yasir Ali's terminal-style GitHub profile" src="./assets/light-v6.svg" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/dark-v7.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/light-v7.svg">
+  <img alt="Yasir Ali's ASCII portrait and real code-growth graph" src="./assets/light-v7.svg" width="100%">
 </picture>
 
 <!--
-  Edit profile.json to change the text shown in the card.
-  The GitHub statistics are refreshed daily by .github/workflows/profile.yml.
+  The real 52-week code-growth graph is refreshed daily by
+  .github/workflows/profile.yml using GitHub's code-frequency data.
 -->
