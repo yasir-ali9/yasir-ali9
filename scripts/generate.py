@@ -150,7 +150,7 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
         row(378, "Interests", profile["interests"]),
     ]
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="580" viewBox="0 0 1200 580" role="img" aria-labelledby="title description">
   <title id="title">{escape(profile["display_name"])}'s GitHub profile</title>
   <desc id="description">A terminal-style profile card with an ASCII portrait and GitHub statistics.</desc>
   <style>
@@ -164,12 +164,12 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
     .muted {{ fill: {colors["muted"]}; }}
     .prompt {{ fill: {colors["green"]}; }}
   </style>
-  <rect width="1200" height="640" rx="12" fill="{colors["background"]}"/>
+  <rect width="1200" height="580" rx="12" fill="{colors["background"]}"/>
   <circle cx="25" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="45" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="65" cy="24" r="6" fill="{colors["dot"]}"/>
   <text x="510" y="51" class="header">{escape(profile["display_name"])}</text>
-  <line x1="490" y1="62" x2="490" y2="608" stroke="{colors["border"]}"/>
+  <line x1="490" y1="62" x2="490" y2="568" stroke="{colors["border"]}"/>
   <g transform="translate(4 30) scale(1.08)">{portrait}</g>
   {section(86, "SYSTEM")}
   {''.join(info_rows)}
