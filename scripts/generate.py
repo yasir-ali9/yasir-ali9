@@ -15,6 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "assets"
+ASSET_VERSION = "v5"
 API = "https://api.github.com"
 GRAPHQL = "https://api.github.com/graphql"
 
@@ -200,7 +201,7 @@ def main() -> None:
         "light": ROOT / "black.svg",
     }
     for theme, portrait_path in themes.items():
-        output = OUTPUT_DIR / f"{theme}.svg"
+        output = OUTPUT_DIR / f"{theme}-{ASSET_VERSION}.svg"
         output.write_text(render(theme, profile, stats, portrait_contents(portrait_path)), encoding="utf-8")
         print(f"wrote {output.relative_to(ROOT)}")
 
