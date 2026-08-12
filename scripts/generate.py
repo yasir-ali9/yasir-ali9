@@ -101,7 +101,7 @@ def value(value: object) -> str:
     return str(value)
 
 
-def row(y: int, label: str, data: object, *, x: int = 520) -> str:
+def row(y: int, label: str, data: object, *, x: int = 510) -> str:
     label_text = escape(label)
     data_text = escape(value(data))
     return (
@@ -116,7 +116,7 @@ def row(y: int, label: str, data: object, *, x: int = 520) -> str:
 def section(y: int, title: str) -> str:
     rule = "─" * max(8, 43 - len(title))
     return (
-        f'<text x="520" y="{y}" class="section">'
+        f'<text x="510" y="{y}" class="section">'
         f'<tspan class="prompt">╭─</tspan> {escape(title)} '
         f'<tspan class="muted">{rule}</tspan></text>'
     )
@@ -174,21 +174,20 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
     .muted {{ fill: {colors["muted"]}; }}
     .prompt {{ fill: {colors["green"]}; }}
   </style>
-  <rect width="1200" height="640" rx="14" fill="{colors["background"]}"/>
-  <rect x="2" y="2" width="1196" height="636" rx="12" fill="{colors["panel"]}"/>
-  <circle cx="33" cy="32" r="6" fill="{colors["dot"]}"/>
-  <circle cx="53" cy="32" r="6" fill="{colors["dot"]}"/>
-  <circle cx="73" cy="32" r="6" fill="{colors["dot"]}"/>
-  <text x="520" y="60" class="header"><tspan class="prompt">{escape(profile["username"])}</tspan>@github <tspan class="muted">~ $ whoami</tspan></text>
-  <line x1="495" y1="72" x2="495" y2="600" stroke="{colors["border"]}"/>
-  <g transform="translate(12 66) scale(1.08)">{portrait}</g>
+  <rect width="1200" height="640" rx="12" fill="{colors["background"]}"/>
+  <circle cx="25" cy="24" r="6" fill="{colors["dot"]}"/>
+  <circle cx="45" cy="24" r="6" fill="{colors["dot"]}"/>
+  <circle cx="65" cy="24" r="6" fill="{colors["dot"]}"/>
+  <text x="510" y="51" class="header">{escape(profile["display_name"])}</text>
+  <line x1="490" y1="62" x2="490" y2="608" stroke="{colors["border"]}"/>
+  <g transform="translate(4 30) scale(1.08)">{portrait}</g>
   {section(86, "SYSTEM")}
   {''.join(info_rows)}
   {section(266, "STACK")}
   {''.join(stack_rows)}
   {section(418, "GITHUB")}
   {''.join(stat_rows)}
-  <text x="520" y="614" class="footer">last sync: {escape(updated)}</text>
+  <text x="510" y="620" class="footer">last sync: {escape(updated)}</text>
 </svg>
 '''
 

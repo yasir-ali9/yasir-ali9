@@ -1,10 +1,8 @@
-<a href="https://github.com/yasir-ali9">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="./assets/light.svg">
-    <img alt="Yasir Ali's terminal-style GitHub profile" src="./assets/light.svg" width="100%">
-  </picture>
-</a>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/light.svg">
+  <img alt="Yasir Ali's terminal-style GitHub profile" src="./assets/light.svg" width="100%">
+</picture>
 
 <!--
   Edit profile.json to change the text shown in the card.
