@@ -125,15 +125,15 @@ def section(y: int, title: str) -> str:
 def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
     dark = theme == "dark"
     colors = {
-        "background": "#07111f" if dark else "#f6f8fa",
-        "panel": "#0d1828" if dark else "#ffffff",
-        "border": "#213047" if dark else "#d0d7de",
+        "background": "#151b24" if dark else "#f3f4f6",
+        "panel": "#151b24" if dark else "#f3f4f6",
+        "border": "#374358" if dark else "#d1d5db",
         "text": "#e6edf3" if dark else "#1f2328",
         "muted": "#6e7681" if dark else "#8c959f",
         "accent": "#ffa657" if dark else "#bc4c00",
         "value": "#79c0ff" if dark else "#0969da",
         "green": "#3fb950" if dark else "#1a7f37",
-        "dot": "#58a6ff" if dark else "#218bff",
+        "dot": "#374358" if dark else "#aeb4bd",
     }
 
     info_rows = [
@@ -174,8 +174,8 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
     .muted {{ fill: {colors["muted"]}; }}
     .prompt {{ fill: {colors["green"]}; }}
   </style>
-  <rect width="1200" height="640" rx="18" fill="{colors["background"]}"/>
-  <rect x="8" y="8" width="1184" height="624" rx="14" fill="{colors["panel"]}" stroke="{colors["border"]}"/>
+  <rect width="1200" height="640" rx="14" fill="{colors["background"]}"/>
+  <rect x="2" y="2" width="1196" height="636" rx="12" fill="{colors["panel"]}"/>
   <circle cx="33" cy="32" r="6" fill="{colors["dot"]}"/>
   <circle cx="53" cy="32" r="6" fill="{colors["dot"]}"/>
   <circle cx="73" cy="32" r="6" fill="{colors["dot"]}"/>
