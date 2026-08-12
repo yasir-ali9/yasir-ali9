@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "assets"
-ASSET_VERSION = "v5"
+ASSET_VERSION = "v6"
 API = "https://api.github.com"
 GRAPHQL = "https://api.github.com/graphql"
 
@@ -151,7 +151,7 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
         row(378, "Interests", profile["interests"]),
     ]
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="570" viewBox="0 0 1200 570" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="585" viewBox="0 0 1200 585" role="img" aria-labelledby="title description">
   <title id="title">{escape(profile["display_name"])}'s GitHub profile</title>
   <desc id="description">A terminal-style profile card with an ASCII portrait and GitHub statistics.</desc>
   <style>
@@ -165,12 +165,12 @@ def render(theme: str, profile: dict, stats: dict, portrait: str) -> str:
     .muted {{ fill: {colors["muted"]}; }}
     .prompt {{ fill: {colors["green"]}; }}
   </style>
-  <rect width="1200" height="570" rx="12" fill="{colors["background"]}"/>
+  <rect width="1200" height="585" rx="12" fill="{colors["background"]}"/>
   <circle cx="25" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="45" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="65" cy="24" r="6" fill="{colors["dot"]}"/>
   <text x="510" y="51" class="header">{escape(profile["display_name"])}</text>
-  <line x1="490" y1="62" x2="490" y2="558" stroke="{colors["border"]}"/>
+  <line x1="490" y1="62" x2="490" y2="573" stroke="{colors["border"]}"/>
   <g transform="translate(4 18) scale(1.08)">{portrait}</g>
   {section(86, "SYSTEM")}
   {''.join(info_rows)}
