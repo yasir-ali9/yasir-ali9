@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/dark.svg?v=3">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/light.svg?v=3">
-  <img alt="Yasir Ali's terminal-style GitHub profile" src="./assets/light.svg?v=3" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/dark.svg?v=4">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/light.svg?v=4">
+  <img alt="Yasir Ali's terminal-style GitHub profile" src="./assets/light.svg?v=4" width="100%">
 </picture>
 
 <!--
