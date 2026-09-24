@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "assets"
-ASSET_VERSION = "v11"
+ASSET_VERSION = "v12"
 API = "https://api.github.com"
 
 OPEN_SOURCE_REPOS = (
@@ -123,7 +123,7 @@ def portrait_contents(path: Path) -> str:
 def linked_list(items: tuple[tuple[str, str], ...], y_start: int) -> str:
     """Render a short, clickable terminal-style list."""
     return "".join(
-        f'<a href="{escape(url, quote=True)}"><text x="510" y="{y_start + index * 34}" class="line link">› {escape(label)}</text></a>'
+        f'<a href="{escape(url, quote=True)}"><text x="510" y="{y_start + index * 24}" class="line link">› {escape(label)}</text></a>'
         for index, (label, url) in enumerate(items)
     )
 
@@ -165,7 +165,7 @@ def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str)
     .prompt {{ fill: {colors["green"]}; }}
     .growth {{ fill: {colors["green"]}; }}
     .accent {{ fill: {colors["accent"]}; }}
-    .link {{ fill: {colors["text"]}; text-decoration: underline; }}
+    .link {{ fill: {colors["text"]}; text-decoration: none; }}
   </style>
   <rect width="1200" height="720" rx="12" fill="{colors["background"]}"/>
   <circle cx="25" cy="24" r="6" fill="{colors["dot"]}"/>
@@ -181,9 +181,9 @@ def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str)
   <path d="M510 252H1170" stroke="{colors["border"]}"/>
   <text x="510" y="288" class="section">TOP OPEN-SOURCE REPOS</text>
   {linked_list(OPEN_SOURCE_REPOS, 322)}
-  <path d="M510 468H1170" stroke="{colors["border"]}"/>
-  <text x="510" y="504" class="section">SELECTED PROJECTS</text>
-  {linked_list(SELECTED_PROJECTS, 538)}
+  <path d="M510 426H1170" stroke="{colors["border"]}"/>
+  <text x="510" y="462" class="section">SELECTED PROJECTS</text>
+  {linked_list(SELECTED_PROJECTS, 496)}
   <text x="1170" y="682" text-anchor="end" class="footer">{escape(updated)} SYNCED</text>
 </svg>
 '''
