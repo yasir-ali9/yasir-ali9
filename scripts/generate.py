@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "assets"
-ASSET_VERSION = "v14"
+ASSET_VERSION = "v15"
 API = "https://api.github.com"
 
 OPEN_SOURCE_REPOS = (
@@ -150,7 +150,7 @@ def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str)
 
     updated = datetime.now(timezone.utc).strftime("%d %b %Y").upper()
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" role="img" aria-labelledby="title description">
   <title id="title">{escape(profile["display_name"])}'s GitHub profile</title>
   <desc id="description">An ASCII portrait with GitHub statistics, open-source repositories, and selected projects.</desc>
   <style>
@@ -167,7 +167,7 @@ def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str)
     .accent {{ fill: {colors["accent"]}; }}
     .link {{ fill: {colors["text"]}; text-decoration: none; }}
   </style>
-  <rect width="1200" height="720" rx="12" fill="{colors["background"]}"/>
+  <rect width="1200" height="600" rx="12" fill="{colors["background"]}"/>
   <circle cx="25" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="45" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="65" cy="24" r="6" fill="{colors["dot"]}"/>
@@ -183,7 +183,7 @@ def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str)
   <path d="M510 384H1170" stroke="{colors["border"]}"/>
   <text x="510" y="420" class="section">Selected projects</text>
   {linked_list(SELECTED_PROJECTS, 454)}
-  <text x="1170" y="682" text-anchor="end" class="footer">{escape(updated)} SYNCED</text>
+  <text x="1170" y="572" text-anchor="end" class="footer">{escape(updated)} SYNCED</text>
 </svg>
 '''
 
