@@ -24,9 +24,9 @@
   <text x="510" y="64" class="section">GITHUB STATISTICS</text>
   <text x="510" y="100" class="line">PUBLIC REPOSITORIES <tspan class="value">9</tspan></text>
   <text x="510" y="130" class="line">TOTAL STARS        <tspan class="value">2</tspan></text>
-  <text x="510" y="160" class="line">NET CODE · 52 WEEKS <tspan class="value">+38,604</tspan></text>
-  <text x="510" y="190" class="line">ADDITIONS          <tspan class="value">+51,124</tspan></text>
-  <text x="510" y="220" class="line">DELETIONS          <tspan class="value">−12,520</tspan></text>
+  <text x="510" y="160" class="line">NET CODE · 52 WEEKS <tspan class="value">+65,161</tspan></text>
+  <text x="510" y="190" class="line">ADDITIONS          <tspan class="value">+78,036</tspan></text>
+  <text x="510" y="220" class="line">DELETIONS          <tspan class="value">−12,875</tspan></text>
   <path d="M510 252H1170" stroke="#d1d5db"/>
   <text x="510" y="288" class="section">TOP OPEN-SOURCE REPOS</text>
   <a href="https://github.com/yasir-ali9/resend-mail"><text x="510" y="322" class="line link">› resend-mail</text></a><a href="https://github.com/yasir-ali9/minimal"><text x="510" y="356" class="line link">› minimal</text></a><a href="https://github.com/yasir-ali9/claude-code-line"><text x="510" y="390" class="line link">› claude-code-line</text></a><a href="https://github.com/yasir-ali9/pixels-to-text"><text x="510" y="424" class="line link">› pixels-to-text</text></a>
