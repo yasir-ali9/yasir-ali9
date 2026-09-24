@@ -16,8 +16,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "assets"
-ASSET_VERSION = "v15"
+ASSET_VERSION = "v16"
 API = "https://api.github.com"
+RIGHT_PANEL_X = 570
 
 OPEN_SOURCE_REPOS = (
     ("resend-mail", "https://github.com/yasir-ali9/resend-mail"),
@@ -123,7 +124,7 @@ def portrait_contents(path: Path) -> str:
 def linked_list(items: tuple[tuple[str, str], ...], y_start: int) -> str:
     """Render a short, clickable terminal-style list."""
     return "".join(
-        f'<a href="{escape(url, quote=True)}"><text x="510" y="{y_start + index * 24}" class="line link">› {escape(label)}</text></a>'
+        f'<a href="{escape(url, quote=True)}"><text x="{RIGHT_PANEL_X}" y="{y_start + index * 24}" class="line link">› {escape(label)}</text></a>'
         for index, (label, url) in enumerate(items)
     )
 
@@ -172,16 +173,16 @@ def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str)
   <circle cx="45" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="65" cy="24" r="6" fill="{colors["dot"]}"/>
   <g transform="translate(4 18) scale(1.08)">{portrait}</g>
-  <text x="510" y="64" class="section">GitHub statistics</text>
-  <text x="510" y="100" class="line">› Public repos <tspan class="value">{statistics["repositories"]:,}</tspan></text>
-  <text x="510" y="124" class="line">› Net code (52 weeks) <tspan class="value">{signed_number(statistics["net"])}</tspan></text>
-  <text x="510" y="148" class="line">› Lines added <tspan class="value">+{statistics["additions"]:,}</tspan></text>
-  <text x="510" y="172" class="line">› Lines removed <tspan class="value">−{statistics["deletions"]:,}</tspan></text>
-  <path d="M510 204H1170" stroke="{colors["border"]}"/>
-  <text x="510" y="240" class="section">Top open-source repos</text>
+  <text x="{RIGHT_PANEL_X}" y="64" class="section">GitHub statistics</text>
+  <text x="{RIGHT_PANEL_X}" y="100" class="line">› Public repos <tspan class="value">{statistics["repositories"]:,}</tspan></text>
+  <text x="{RIGHT_PANEL_X}" y="124" class="line">› Net code (52 weeks) <tspan class="value">{signed_number(statistics["net"])}</tspan></text>
+  <text x="{RIGHT_PANEL_X}" y="148" class="line">› Lines added <tspan class="value">+{statistics["additions"]:,}</tspan></text>
+  <text x="{RIGHT_PANEL_X}" y="172" class="line">› Lines removed <tspan class="value">−{statistics["deletions"]:,}</tspan></text>
+  <path d="M{RIGHT_PANEL_X} 204H1170" stroke="{colors["border"]}"/>
+  <text x="{RIGHT_PANEL_X}" y="240" class="section">Top open-source repos</text>
   {linked_list(OPEN_SOURCE_REPOS, 274)}
-  <path d="M510 384H1170" stroke="{colors["border"]}"/>
-  <text x="510" y="420" class="section">Selected projects</text>
+  <path d="M{RIGHT_PANEL_X} 384H1170" stroke="{colors["border"]}"/>
+  <text x="{RIGHT_PANEL_X}" y="420" class="section">Selected projects</text>
   {linked_list(SELECTED_PROJECTS, 454)}
   <text x="1170" y="572" text-anchor="end" class="footer">{escape(updated)} SYNCED</text>
 </svg>
