@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = ROOT / "assets"
-ASSET_VERSION = "v12"
+ASSET_VERSION = "v13"
 API = "https://api.github.com"
 
 OPEN_SOURCE_REPOS = (
@@ -172,18 +172,17 @@ def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str)
   <circle cx="45" cy="24" r="6" fill="{colors["dot"]}"/>
   <circle cx="65" cy="24" r="6" fill="{colors["dot"]}"/>
   <g transform="translate(4 18) scale(1.08)">{portrait}</g>
-  <text x="510" y="64" class="section">GITHUB STATISTICS</text>
-  <text x="510" y="100" class="line">PUBLIC REPOSITORIES <tspan class="value">{statistics["repositories"]:,}</tspan></text>
-  <text x="510" y="130" class="line">TOTAL STARS        <tspan class="value">{statistics["stars"]:,}</tspan></text>
-  <text x="510" y="160" class="line">NET CODE · 52 WEEKS <tspan class="value">{signed_number(statistics["net"])}</tspan></text>
-  <text x="510" y="190" class="line">ADDITIONS          <tspan class="value">+{statistics["additions"]:,}</tspan></text>
-  <text x="510" y="220" class="line">DELETIONS          <tspan class="value">−{statistics["deletions"]:,}</tspan></text>
-  <path d="M510 252H1170" stroke="{colors["border"]}"/>
-  <text x="510" y="288" class="section">TOP OPEN-SOURCE REPOS</text>
-  {linked_list(OPEN_SOURCE_REPOS, 322)}
-  <path d="M510 426H1170" stroke="{colors["border"]}"/>
-  <text x="510" y="462" class="section">SELECTED PROJECTS</text>
-  {linked_list(SELECTED_PROJECTS, 496)}
+  <text x="510" y="64" class="section">GitHub statistics</text>
+  <text x="510" y="100" class="line">› Public repos <tspan class="value">{statistics["repositories"]:,}</tspan></text>
+  <text x="510" y="124" class="line">› Net code (52 weeks) <tspan class="value">{signed_number(statistics["net"])}</tspan></text>
+  <text x="510" y="148" class="line">› Additions <tspan class="value">+{statistics["additions"]:,}</tspan></text>
+  <text x="510" y="172" class="line">› Deletions <tspan class="value">−{statistics["deletions"]:,}</tspan></text>
+  <path d="M510 204H1170" stroke="{colors["border"]}"/>
+  <text x="510" y="240" class="section">Top open-source repos</text>
+  {linked_list(OPEN_SOURCE_REPOS, 274)}
+  <path d="M510 384H1170" stroke="{colors["border"]}"/>
+  <text x="510" y="420" class="section">Selected projects</text>
+  {linked_list(SELECTED_PROJECTS, 454)}
   <text x="1170" y="682" text-anchor="end" class="footer">{escape(updated)} SYNCED</text>
 </svg>
 '''
