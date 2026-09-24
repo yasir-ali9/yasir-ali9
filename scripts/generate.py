@@ -6,9 +6,10 @@ from __future__ import annotations
 import json
 import os
 import re
+import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from html import escape
 from pathlib import Path
 
@@ -48,14 +49,67 @@ def request_json(url: str, token: str = "", payload: dict | None = None) -> dict
 
 
 def github_statistics(username: str) -> dict[str, int]:
-    """Fetch the concise public GitHub statistics shown on the profile card."""
+    """Fetch concise public and 52-week code statistics for the profile card."""
     token = os.getenv("GITHUB_TOKEN", "")
     user = request_json(f"{API}/users/{username}", token)
     repos = request_json(f"{API}/users/{username}/repos?type=owner&per_page=100", token)
+    additions, deletions = code_changes_last_year(repos, token)
     return {
         "repositories": int(user.get("public_repos", len(repos))),
         "stars": sum(int(repo.get("stargazers_count", 0)) for repo in repos),
+        "additions": additions,
+        "deletions": deletions,
+        "net": additions - deletions,
     }
+
+
+def code_changes_last_year(repos: dict | list, token: str) -> tuple[int, int]:
+    """Sum additions and deletions over the last 52 weeks for owned repositories."""
+    if not isinstance(repos, list):
+        return 0, 0
+
+    earliest = int((datetime.now(timezone.utc) - timedelta(weeks=52)).timestamp())
+    additions = 0
+    deletions = 0
+    for repo in repos:
+        if repo.get("fork") or repo.get("size", 0) == 0:
+            continue
+        frequency = repository_code_frequency(repo["full_name"], token)
+        for timestamp, added, deleted in frequency:
+            if timestamp >= earliest:
+                additions += added
+                deletions += abs(deleted)
+    return additions, deletions
+
+
+def repository_code_frequency(full_name: str, token: str) -> list[list[int]]:
+    """Return weekly [timestamp, additions, deletions] data for one repository."""
+    url = f"{API}/repos/{full_name}/stats/code_frequency"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "yasir-ali9-profile-readme",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    for attempt in range(4):
+        try:
+            request = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(request, timeout=30) as response:
+                if response.status == 202:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                data = json.load(response)
+                return data if isinstance(data, list) else []
+        except urllib.error.HTTPError as error:
+            if error.code == 202:
+                time.sleep(2 * (attempt + 1))
+                continue
+            if error.code in (204, 409, 422):
+                return []
+            raise
+    return []
 
 
 def portrait_contents(path: Path) -> str:
@@ -72,6 +126,11 @@ def linked_list(items: tuple[tuple[str, str], ...], y_start: int) -> str:
         f'<a href="{escape(url, quote=True)}"><text x="510" y="{y_start + index * 34}" class="line link">› {escape(label)}</text></a>'
         for index, (label, url) in enumerate(items)
     )
+
+
+def signed_number(number: int) -> str:
+    sign = "−" if number < 0 else "+" if number > 0 else ""
+    return f"{sign}{abs(number):,}"
 
 
 def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str) -> str:
@@ -116,12 +175,15 @@ def render(theme: str, profile: dict, statistics: dict[str, int], portrait: str)
   <text x="510" y="64" class="section">GITHUB STATISTICS</text>
   <text x="510" y="100" class="line">PUBLIC REPOSITORIES <tspan class="value">{statistics["repositories"]:,}</tspan></text>
   <text x="510" y="130" class="line">TOTAL STARS        <tspan class="value">{statistics["stars"]:,}</tspan></text>
-  <path d="M510 222H1170" stroke="{colors["border"]}"/>
-  <text x="510" y="258" class="section">TOP OPEN-SOURCE REPOS</text>
-  {linked_list(OPEN_SOURCE_REPOS, 292)}
-  <path d="M510 438H1170" stroke="{colors["border"]}"/>
-  <text x="510" y="474" class="section">SELECTED PROJECTS</text>
-  {linked_list(SELECTED_PROJECTS, 508)}
+  <text x="510" y="160" class="line">NET CODE · 52 WEEKS <tspan class="value">{signed_number(statistics["net"])}</tspan></text>
+  <text x="510" y="190" class="line">ADDITIONS          <tspan class="value">+{statistics["additions"]:,}</tspan></text>
+  <text x="510" y="220" class="line">DELETIONS          <tspan class="value">−{statistics["deletions"]:,}</tspan></text>
+  <path d="M510 252H1170" stroke="{colors["border"]}"/>
+  <text x="510" y="288" class="section">TOP OPEN-SOURCE REPOS</text>
+  {linked_list(OPEN_SOURCE_REPOS, 322)}
+  <path d="M510 468H1170" stroke="{colors["border"]}"/>
+  <text x="510" y="504" class="section">SELECTED PROJECTS</text>
+  {linked_list(SELECTED_PROJECTS, 538)}
   <text x="1170" y="682" text-anchor="end" class="footer">{escape(updated)} SYNCED</text>
 </svg>
 '''
@@ -136,6 +198,9 @@ def main() -> None:
         statistics = {
             "repositories": 0,
             "stars": 0,
+            "additions": 0,
+            "deletions": 0,
+            "net": 0,
         }
 
     OUTPUT_DIR.mkdir(exist_ok=True)

@@ -24,11 +24,14 @@
   <text x="510" y="64" class="section">GITHUB STATISTICS</text>
   <text x="510" y="100" class="line">PUBLIC REPOSITORIES <tspan class="value">9</tspan></text>
   <text x="510" y="130" class="line">TOTAL STARS        <tspan class="value">2</tspan></text>
-  <path d="M510 222H1170" stroke="#374358"/>
-  <text x="510" y="258" class="section">TOP OPEN-SOURCE REPOS</text>
-  <a href="https://github.com/yasir-ali9/resend-mail"><text x="510" y="292" class="line link">› resend-mail</text></a><a href="https://github.com/yasir-ali9/minimal"><text x="510" y="326" class="line link">› minimal</text></a><a href="https://github.com/yasir-ali9/claude-code-line"><text x="510" y="360" class="line link">› claude-code-line</text></a><a href="https://github.com/yasir-ali9/pixels-to-text"><text x="510" y="394" class="line link">› pixels-to-text</text></a>
-  <path d="M510 438H1170" stroke="#374358"/>
-  <text x="510" y="474" class="section">SELECTED PROJECTS</text>
-  <a href="https://feppel.com"><text x="510" y="508" class="line link">› feppel.com</text></a><a href="https://leebai.com"><text x="510" y="542" class="line link">› leebai.com</text></a><a href="https://osho.pk"><text x="510" y="576" class="line link">› osho.pk</text></a><a href="https://enviroconsulting.co"><text x="510" y="610" class="line link">› enviroconsulting.co</text></a>
+  <text x="510" y="160" class="line">NET CODE · 52 WEEKS <tspan class="value">+38,604</tspan></text>
+  <text x="510" y="190" class="line">ADDITIONS          <tspan class="value">+51,124</tspan></text>
+  <text x="510" y="220" class="line">DELETIONS          <tspan class="value">−12,520</tspan></text>
+  <path d="M510 252H1170" stroke="#374358"/>
+  <text x="510" y="288" class="section">TOP OPEN-SOURCE REPOS</text>
+  <a href="https://github.com/yasir-ali9/resend-mail"><text x="510" y="322" class="line link">› resend-mail</text></a><a href="https://github.com/yasir-ali9/minimal"><text x="510" y="356" class="line link">› minimal</text></a><a href="https://github.com/yasir-ali9/claude-code-line"><text x="510" y="390" class="line link">› claude-code-line</text></a><a href="https://github.com/yasir-ali9/pixels-to-text"><text x="510" y="424" class="line link">› pixels-to-text</text></a>
+  <path d="M510 468H1170" stroke="#374358"/>
+  <text x="510" y="504" class="section">SELECTED PROJECTS</text>
+  <a href="https://feppel.com"><text x="510" y="538" class="line link">› feppel.com</text></a><a href="https://leebai.com"><text x="510" y="572" class="line link">› leebai.com</text></a><a href="https://osho.pk"><text x="510" y="606" class="line link">› osho.pk</text></a><a href="https://enviroconsulting.co"><text x="510" y="640" class="line link">› enviroconsulting.co</text></a>
   <text x="1170" y="682" text-anchor="end" class="footer">24 SEP 2026 SYNCED</text>
 </svg>
